@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ex</title>
+</head>
+<body>
+    <xmp>
+
+<!DOCTYPE html> 
+<html lang="en"> 
+ 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Popup Menu App</title> 
+    <script> 
+        function showMenu(position) { 
+            var xhttp = new XMLHttpRequest(); 
+ 
+            xhttp.onreadystatechange = function () { 
+                if (this.readyState == 4 && this.status == 200) { 
+                    document.getElementById(position).innerHTML = 
+this.responseText; 
+                } 
+            }; 
+            xhttp.open("GET", "/PopupMenu/" + position, true); 
+ 
+            xhttp.send(); 
+        } 
+ 
+        function resetMenu(position){ 
+            document.getElementById(position).innerHTML = ""; 
+        } 
+    </script> 
+</head> 
+ 
+<body> 
+    <h1>Popup Menu</h1> 
+    <section style="display: flex;"> 
+        <h1 onclick="showMenu('programeMenu')" 
+onmouseout="resetMenu('programeMenu')">Programming <div id="programeMenu" 
+style="font-size: medium;">.</div> 
+        </h1> 
+        <div style="width: 100px;"></div>
+       <h1 onclick="showMenu('softwareMenu')" 
+onmouseout="resetMenu('softwareMenu')">Software <div id="softwareMenu" 
+style="font-size: medium;">.</div> 
+        </h1> 
+    </section> 
+</body> 
+ 
+</html>
+
+
+Web.xml 
+ 
+<web-app> 
+     
+    <servlet> 
+        <servlet-name>ProgrameMenu</servlet-name> 
+        <servlet-class>ProgrameMenu</servlet-class> 
+    </servlet> 
+    <servlet-mapping> 
+        <servlet-name>ProgrameMenu</servlet-name> 
+        <url-pattern>/programeMenu</url-pattern> 
+    </servlet-mapping> 
+ 
+    <servlet> 
+        <servlet-name>SoftwareMenu</servlet-name> 
+        <servlet-class>SoftwareMenu</servlet-class> 
+    </servlet> 
+    <servlet-mapping> 
+        <servlet-name>SoftwareMenu</servlet-name> 
+        <url-pattern>/softwareMenu</url-pattern> 
+    </servlet-mapping> 
+ 
+    <welcome-file-list> 
+        <welcome-file>index.html</welcome-file> 
+    </welcome-file-list> 
+</web-app> 	
+
+ProgrameMenu.java 
+ 
+import java.io.*; 
+import javax.servlet.*; 
+import javax.servlet.http.*; 
+import java.sql.*; 
+ 
+public class ProgrameMenu extends HttpServlet { 
+ 
+    static { 
+        try { 
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
+        } catch (ClassNotFoundException e) { 
+            throw new RuntimeException("Error loading MySQL JDBC driver", e); 
+        } 
+    } 
+ 
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
+throws IOException, ServletException { 
+        response.setContentType("text/html"); 
+        PrintWriter out = response.getWriter(); 
+ 
+        try ( 
+                Connection conn = 
+DriverManager.getConnection("jdbc:mysql://localhost:3306/courses", "root", 
+                        "password"); 
+                Statement stmt = conn.createStatement();) { 
+            String sql = "SELECT toolname FROM development WHERE 
+type='programming'"; 
+            ResultSet result = stmt.executeQuery(sql); 
+            int rowCount = 0; 
+ 
+            while (result.next()) { 
+                String toolName = result.getString("toolname"); 
+                out.println("<p>" + toolName + " </p>"); 
+            } 
+        } catch (Exception e) { 
+            // TODO: handle exception 
+        } 
+ 
+        out.close(); 
+    } 
+} 
+
+SoftwareMenu.java 
+ 
+import java.io.*; 
+import javax.servlet.*; 
+import javax.servlet.http.*; 
+import java.sql.*; 
+ 
+public class SoftwareMenu extends HttpServlet { 
+ 
+    static { 
+        try { 
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
+        } catch (ClassNotFoundException e) { 
+            throw new RuntimeException("Error loading MySQL JDBC driver", e); 
+        } 
+    } 
+ 
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
+throws IOException, ServletException { 
+        response.setContentType("text/html"); 
+        PrintWriter out = response.getWriter(); 
+ 
+        try ( 
+                Connection conn = 
+DriverManager.getConnection("jdbc:mysql://localhost:3306/courses", "root", 
+                        "password"); 
+                Statement stmt = conn.createStatement();) { 
+            String sql = "SELECT toolname FROM development WHERE 
+type='software'"; 
+            ResultSet result = stmt.executeQuery(sql); 
+            int rowCount = 0; 
+ 
+            while (result.next()) { 
+                String toolName = result.getString("toolname"); 
+                out.println("<p>" + toolName + " </p>"); 
+            } 
+        } catch (Exception e) { 
+            // TODO: handle exception 
+        } 
+ 
+        out.close(); 
+    } 
+}
+
+SQL :- 
+CREATE TABLE development(toolname VARCHAR(255), type VARCHAR(255)); 
+INSERT INTO development VALUES('JAVA','programming'); 
+INSERT INTO development VALUES('JavaScript','programming'); 
+INSERT INTO development VALUES('C/Cpp','programming'); 
+INSERT INTO development VALUES('Python','programming'); 
+INSERT INTO development VALUES('VScode','software'); 
+INSERT INTO development VALUES('Git','software'); 
+INSERT INTO development VALUES('Colab','software'); 
+SELECT * FROM development; 
+SELECT toolname FROM development WHERE type='programming' 
+
+
+</xmp>
+</body>
+</html>
